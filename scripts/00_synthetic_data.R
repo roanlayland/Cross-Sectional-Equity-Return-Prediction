@@ -1,16 +1,14 @@
 # =====================================================================
-# AlphaQuant — Synthetic panel generator
+# Cross-Sectional-Equity-Return-Prediction — Synthetic panel generator
 #
 # Produces data/panel_ranked_SYNTH.rds matching the column contract.
 # Signals of KNOWN strength are planted, so you can verify your pipeline
 # recovers what was put in.
 #
-# ⚠️ FOR PIPELINE TESTING ONLY. Never put a synthetic result in the paper.
-#
 # Why this works: real data cannot tell you whether your code is correct,
-# because you don't know the true answer. Here you do. If your backtest
+# because you don't know the true answer. If your backtest
 # recovers ~0.03 IC, the pipeline is sound. If it reports 0.35, you have
-# a leak — and you found it on fake data in an afternoon.
+# a leak
 # =====================================================================
 
 library(tidyverse)
@@ -29,12 +27,12 @@ TRUE_BETAS <- c(
   rk_asset_growth = -0.020
 )
 # Every other feature has a TRUE coefficient of exactly zero.
-# Your model should find nothing in them. If it does, it is overfitting.
+# The model should find nothing in them. If it does, it is overfitting.
 
-TRUE_INTERACTION <- 0.020   # high mom AND high roe together, nonlinear
+TRUE_INTERACTION <- 0.020   # high mom and high roe together, nonlinear
 IDIO_VOL   <- 0.42          # annual idiosyncratic vol
 MARKET_VOL <- 0.16          # common component — this is what makes
-# pooled t-stats wrong, and it's here on purpose
+
 
 N_STOCKS <- 1500
 # Seq from the FIRST of the month, then snap to month-end. Starting from
@@ -144,8 +142,6 @@ market <- tibble(
 
 n_before <- nrow(panel)
 
-# Join first, THEN compute the signal against the joined frame. This is
-# the ordering that prevents the recycling bug.
 panel <- panel |>
   left_join(market, by = "form_date", relationship = "many-to-one")
 
