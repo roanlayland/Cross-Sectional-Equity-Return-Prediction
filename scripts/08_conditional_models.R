@@ -1,5 +1,5 @@
 # =====================================================================
-# AlphaQuant — Conditional & interaction models
+# Cross-Sectional-Equity-Return-Prediction — Conditional & interaction models
 #
 # Question: does explicitly modelling the conditional structure found
 # in 07 improve out-of-sample performance over the pooled models in 06?
@@ -9,18 +9,12 @@
 #   B. Separate XGBoost per volatility tercile
 #   C. Pooled XGBoost (baseline from 06)
 #
-# ⚠️ THE DATA-MINING TRAP
-# Do NOT search across factor combinations and report the best backtest.
+# THE DATA-MINING TRAP
+# Do not search across factor combinations and report the best backtest.
 # With 26 factors the best-of-millions combination looks spectacular by
 # chance alone. Everything here is SPECIFIED IN ADVANCE from theory
 # (limits to arbitrage) and estimated only on training data.
-#
-# ⚠️ HONEST DISCLOSURE
-# The interactions below were chosen after seeing full-sample results in
-# 07. That is in-sample specification search, and it must be disclosed
-# in the paper. Section 5 verifies the pattern holds using pre-2010
-# data only, which is the defensible version.
-# =====================================================================
+#=====================================================================
 
 library(tidyverse)
 library(lubridate)
@@ -196,7 +190,7 @@ fit_xgb_by_vol <- function(sp) {
 
 
 # =====================================================================
-# 5. ⚠️ Verify the conditioning on TRAINING DATA ONLY
+# 5. Verify the conditioning on training data only
 # =====================================================================
 # The interactions were chosen after seeing full-sample results. This
 # checks whether the same pattern is visible using pre-2010 data alone —
@@ -307,25 +301,3 @@ ic2 |> pivot_wider(names_from = model, values_from = ic) |> drop_na() |>
 
 write_csv(ic_sum2, "output/conditional_ic.csv")
 write_csv(bt2,     "output/conditional_spreads.csv")
-
-
-# =====================================================================
-# HOW TO READ THIS
-# =====================================================================
-# enet_inter >> enet_base
-#   -> the interactions ARE the mechanism trees were exploiting. This is
-#      the most interpretable possible result and the best paper outcome.
-#
-# enet_inter ~ enet_base, xgb still ahead
-#   -> trees are finding structure beyond these seven hand-specified
-#      terms. Report that hand-coding interactions is insufficient.
-#
-# xgb_by_vol > xgb_base
-#   -> regime-specific models beat one pooled model.
-#
-# xgb_by_vol < xgb_base
-#   -> splitting the sample cost more in statistical power than the
-#      regime specificity gained. Common, and worth reporting.
-#
-# ALL of these are publishable results. None requires the conditioning
-# to "work." Report what you find.
