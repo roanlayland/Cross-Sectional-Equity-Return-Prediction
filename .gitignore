@@ -1,0 +1,12 @@
+# WRDS data is licensed and must never be committed
+data/
+data_global/
+*.rds
+
+# R session files
+.Rhistory
+.RData
+.Rproj.user/
+
+# OS
+.DS_Store
