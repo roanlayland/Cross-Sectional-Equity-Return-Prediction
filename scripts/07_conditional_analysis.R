@@ -1,11 +1,11 @@
 # =====================================================================
-# AlphaQuant — Conditional factor analysis
+# Cross-Sectional-Equity-Return-Prediction — Conditional factor analysis
 #
 # Does each factor work everywhere, or only in certain kinds of stocks?
-# Conditions on: size, sector, volatility, and time period.
+# Conditions: size, sector, volatility, and time period.
 #
-# ⚠️ MULTIPLE TESTING. 26 factors x 5 size buckets = 130 tests. At
-# alpha = 0.05 you expect ~6 significant results by chance alone.
+# MULTIPLE TESTING. 26 factors x 5 size buckets = 130 tests. At
+# alpha = 0.05, an expected ~6 significant results by chance alone.
 # Trust MONOTONIC PATTERNS across buckets, not isolated hits.
 # =====================================================================
 
@@ -65,11 +65,6 @@ conditional_sort <- function(dat, group_var, min_n = 100) {
 # =====================================================================
 # 2. BY SIZE
 # =====================================================================
-# Most documented anomalies are stronger in small caps: less analyst
-# coverage, higher limits to arbitrage. If your factors follow that
-# pattern, it corroborates them. If a factor is strong ONLY in the
-# largest quintile, be suspicious.
-
 panel_size <- panel |>
   group_by(form_date) |>
   mutate(size_q = ntile(mktcap, 5)) |>
@@ -112,7 +107,6 @@ print(size_trend, n = 30)
 # 3. BY SECTOR
 # =====================================================================
 # 26 factors x 11 sectors = 286 tests. Expect ~14 false positives.
-# Read this as exploratory only.
 
 sector_names <- c("10"="Energy","15"="Materials","20"="Industrials",
                   "25"="Cons Disc","30"="Cons Staples","35"="Health Care",
@@ -126,15 +120,13 @@ panel_sec <- panel |>
 sector_res <- conditional_sort(panel_sec, "sector", min_n = 50)
 
 cat("\n=========== TOP FACTOR-SECTOR COMBINATIONS ===========\n")
-cat("⚠️ ~14 of these are false positives. Treat as hypothesis-generating.\n\n")
+cat("~14 of these are false positives. Treat as hypothesis-generating.\n\n")
 sector_res |>
   filter(n_periods >= 200) |>
   arrange(desc(abs(t_stat))) |>
   select(feature, grp, avg_spread, t_stat, n_periods) |>
   print(n = 25)
 
-# Which factors are CONSISTENT across sectors? Far more trustworthy
-# than a single strong sector hit.
 sector_consistency <- sector_res |>
   filter(n_periods >= 200) |>
   group_by(feature) |>
@@ -256,24 +248,3 @@ write_csv(vol_res,             "output/conditional_volatility.csv")
 write_csv(era_res,             "output/conditional_era.csv")
 
 cat("\nDone. Six CSVs in output/, two figures in figures/.\n")
-
-
-# =====================================================================
-# HOW TO READ ALL THIS
-# =====================================================================
-# TRUSTWORTHY:
-#   - monotone gradient across size buckets (small > large)
-#   - same sign in 3+ of 4 eras
-#   - same sign in 8+ of 11 sectors
-#   - significant in the full sample AND in most subsamples
-#
-# NOT TRUSTWORTHY:
-#   - significant in exactly one bucket, one sector, or one era
-#   - sign flips between adjacent buckets
-#   - only significant in the smallest size quintile (could be
-#     microcap noise or illiquidity, not a tradeable effect)
-#
-# In the paper, lead with the size gradient and the era table. Present
-# the sector results as exploratory, with the multiple-testing caveat
-# stated explicitly. Reviewers and interviewers respect that far more
-# than a table of cherry-picked significant cells.
