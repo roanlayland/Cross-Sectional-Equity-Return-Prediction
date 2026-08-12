@@ -1,14 +1,8 @@
 # =====================================================================
-# AlphaQuant — Monthly rebalanced Top-25 portfolio
+# ACross-Sectional-Equity-Return-Prediction — Monthly rebalanced Top-25 portfolio
 #
 # Each month: score the cross-section, buy $100 of each of the top 25,
 # hold one month, sell everything, repeat.
-#
-# ⚠️ HORIZON MISMATCH
-# The model is trained to predict 12-MONTH returns but this holds for
-# ONE month. You capture roughly a twelfth of the signal while paying
-# full transaction costs twelve times a year. Expect this to look worse
-# than the annual strategy. That comparison IS the result.
 #
 # Models are retrained once per year with a 12-month embargo, then used
 # for the following twelve monthly rebalances.
@@ -37,7 +31,6 @@ dl       <- read_rds("data/delist.rds")
 # =====================================================================
 # 1. One-month forward returns (with delisting returns)
 # =====================================================================
-# The panel only carries fwd_12m. Monthly holding needs fwd_1m.
 
 fwd1 <- msf |>
   mutate(ym = floor_date(date, "month")) |>
@@ -290,23 +283,3 @@ ggsave("figures/monthly_drawdown.png", fig2, width = 10, height = 4, dpi = 300)
 write_csv(acct, "output/monthly_account.csv")
 
 cat("\nSaved figures and output/monthly_account.csv\n")
-
-
-# =====================================================================
-# HOW TO READ THIS
-# =====================================================================
-# The comparison that matters is "Top 25 net" vs "Equal-weight universe",
-# not against the S&P 500. Your universe is all US common stocks above a
-# size floor, equal-weighted. Comparing an equal-weighted small-and-mid
-# portfolio to a cap-weighted large-cap index is not a fair benchmark.
-#
-# Expect:
-#   - very high turnover (60-90%/month) because a 12-month signal
-#     reshuffles the extreme tail constantly
-#   - cost drag of 3-5% per year
-#   - net returns well below the annual-rebalance strategy
-#
-# If net beats the benchmark with t > 2 over 15 years, that is a real
-# result. If it does not, the honest conclusion is that monthly
-# rebalancing destroys the edge through costs -- which is exactly what
-# the horizon mismatch predicts, and worth reporting.
