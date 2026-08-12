@@ -1,7 +1,7 @@
 # =====================================================================
-# AlphaQuant — What is the tree model actually using?
+# Cross-Sectional-Equity-Return-Prediction — What is the tree model actually using?
 #
-# Your interaction experiment showed that vol x asset_growth in
+# The interaction experiment showed that vol x asset_growth in
 # multiplicative form does NOT close the gap between linear and tree
 # models. So the nonlinearity has some other shape. This script finds it.
 #
@@ -103,7 +103,7 @@ cat("Baseline out-of-sample rank IC:", round(base_ic, 4), "\n")
 # Built-in xgboost gain is biased toward high-cardinality features;
 # permutation is not.
 #
-# Shuffling happens WITHIN each month, so the cross-sectional
+# Shuffling happens within each month, so the cross-sectional
 # distribution is preserved and only the stock-to-value mapping breaks.
 
 perm_importance <- function(feat, n_rep = 3) {
@@ -176,7 +176,7 @@ ggsave("figures/partial_dependence.png", fig_pdp,
 # =====================================================================
 # 4. LINEARITY TEST — how far from a straight line?
 # =====================================================================
-# This is the key diagnostic. Your interaction experiment showed that
+# This is the key diagnostic. The interaction experiment showed that
 # multiplicative terms don't close the linear-tree gap, so the shape
 # must be something else. R2_linear near 1.0 means that feature's effect
 # IS essentially linear; low values mean it isn't.
@@ -202,9 +202,6 @@ print(linearity, n = 15)
 # =====================================================================
 # 5. 2D PARTIAL DEPENDENCE — the interaction surface
 # =====================================================================
-# Your 08 test used vol x asset_growth as a MULTIPLICATIVE term and it
-# failed. This shows the surface the tree actually learned. If it isn't
-# a smooth saddle, that explains why the product term didn't help.
 
 pdp_2d <- function(f1, f2, grid_n = 12) {
   g <- seq(0.05, 0.95, length.out = grid_n)
@@ -244,8 +241,7 @@ cat("             which explains why adding interactions did not help.\n")
 # =====================================================================
 # 6. WHAT DOES THE MODEL ACTUALLY BUY?
 # =====================================================================
-# The most intuitive output in the whole project: average characteristics
-# of the top vs bottom predicted decile.
+# average characteristics of the top vs bottom predicted decile.
 
 port <- test |>
   group_by(form_date) |>
@@ -275,23 +271,6 @@ write_csv(surf,      "output/interaction_surface.csv")
 
 cat("\nDone. Four CSVs, three figures.\n")
 
-
-# =====================================================================
-# HOW TO READ THIS
-# =====================================================================
-# The central question your 08 results raised: if vol x asset_growth in
-# product form doesn't close the linear-tree gap, what shape IS the
-# nonlinearity?
-#
-# Section 4 answers it for single features. Watch for:
-#   - n_sign_flips > 0 : the effect turns around. Linear models cannot
-#     represent this at all, regardless of interaction terms.
-#   - r2_linear < 0.8 with 0 sign flips : monotonic but curved, e.g. the
-#     effect concentrates in one tail. A linear model gets the direction
-#     right and the magnitude wrong where it matters most.
-#
-# Section 5 answers it for the interaction. If the surface R2 is below
-# 0.90, the tree learned something threshold-like rather than
 # multiplicative — which is exactly why your hand-coded product term
 # failed, and it is a genuinely interesting finding to report.
 #
