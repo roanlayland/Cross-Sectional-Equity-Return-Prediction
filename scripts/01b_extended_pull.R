@@ -1,5 +1,5 @@
 # =====================================================================
-# AlphaQuant — Stage 2: WRDS data extraction
+# Cross-Sectional-Equity-Return-Prediction — Stage 2: WRDS data extraction
 
 library(RPostgres)
 library(tidyverse)
@@ -15,7 +15,7 @@ START <- "1993-01-01"   # 2 yrs before 1995 so lagged features exist
 
 
 # =====================================================================
-# 1. CRSP MONTHLY  (~3 min)
+# 1. CRSP MONTHLY 
 # =====================================================================
 msf <- dbGetQuery(wrds, paste0("
   select a.permno, a.date, a.ret, a.retx, a.prc, a.shrout, a.vol,
@@ -35,10 +35,10 @@ nrow(msf); range(msf$date); n_distinct(msf$permno)
 
 
 # =====================================================================
-# 2. DELISTING RETURNS  (~10 sec) — do not skip this
+# 2. DELISTING RETURNS
 # =====================================================================
 # Without these, bankrupt firms exit your sample at their last traded
-# price instead of at -100%. This inflates every return you compute.
+# price instead of at -100%. This inflates every return.
 
 dl <- dbGetQuery(wrds, "
   select permno, dlstdt, dlret, dlstcd
@@ -49,7 +49,7 @@ write_rds(dl, "data/delist.rds")
 
 
 # =====================================================================
-# 3. CRSP DAILY  (~30-45 min, several GB) — needed for beta & volatility
+# 3. CRSP DAILY - needed for beta & volatility
 # =====================================================================
 
 dsf <- dbGetQuery(wrds, paste0("
@@ -71,7 +71,7 @@ write_rds(mkt_d, "data/mkt_daily.rds")
 
 
 # =====================================================================
-# 4. COMPUSTAT ANNUAL  (~2 min)
+# 4. COMPUSTAT ANNUAL 
 # =====================================================================
 # Without the four filters you get duplicate rows
 # per firm-year from restatements and alternate reporting formats.
@@ -98,7 +98,7 @@ nrow(funda); n_distinct(funda$gvkey)
 
 
 # =====================================================================
-# 5. COMPUSTAT QUARTERLY  (~3 min) — optional, gives fresher data
+# 5. COMPUSTAT QUARTERLY gives fresher data
 # =====================================================================
 # Annual data is up to 18 months stale at formation. Quarterly cuts that
 # to ~4 months.
@@ -119,7 +119,7 @@ write_rds(fundq, "data/fundq.rds")
 
 
 # =====================================================================
-# 6. CCM LINK TABLE  (~5 sec) — joins Compustat gvkey to CRSP permno
+# 6. CCM LINK TABLE — joins Compustat gvkey to CRSP permno
 # =====================================================================
 link <- dbGetQuery(wrds, "
   select gvkey, lpermno as permno, lpermco as permco,
