@@ -1,5 +1,5 @@
 # =====================================================================
-# AlphaQuant — Final three analyses
+#  Cross-Sectional-Equity-Return-Prediction— Final three analyses
 #
 #   1. Long / short / long-short at IDENTICAL breadth and holding period
 #   2. Transaction cost sensitivity (20 / 30 / 50 bp)
@@ -208,7 +208,6 @@ cat("Report the 50bp column as the conservative case.\n")
 # =====================================================================
 # Every construction tested, so the breadth relationship is presented as
 # a finding rather than the best result being cherry-picked.
-# ⚠️ VERIFY these against your own console output before publishing.
 
 config <- tribble(
   ~Construction,          ~Names, ~`Hold (mo)`, ~`Net ann`, ~Vol,   ~Sharpe, ~`Max DD`,
@@ -258,20 +257,3 @@ write_csv(config,    "output/configurations.csv")
 write_csv(port,      "output/leg_returns.csv")
 
 cat("\nDone. Three CSVs and one figure.\n")
-
-
-# =====================================================================
-# WHAT TO EXPECT
-# =====================================================================
-# Long only:   CAPM alpha near or below zero, beta above 1
-# Short only:  positive alpha (the informative tail)
-# Long-short:  positive FF6 alpha, beta near zero, low volatility
-#
-# If that pattern holds, the paper writes itself: the model's predictive
-# power is concentrated in identifying underperformers, which a long-only
-# portfolio structurally cannot exploit.
-#
-# If long-short alpha is NOT significant here at matched breadth, then
-# the earlier decile-level alpha (t = 3.21) came from the extreme tails
-# rather than the top/bottom 100 -- also worth reporting, and it would
-# mean the tradeable capacity is smaller than the decile result suggests.
