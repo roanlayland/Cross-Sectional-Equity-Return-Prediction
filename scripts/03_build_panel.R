@@ -1,12 +1,12 @@
 # =====================================================================
-# AlphaQuant — Build the panel  (self-contained version)
+# Cross-Sectional-Equity-Return-Prediction — Build the panel  (self-contained version)
 #
 # WRDS raw tables  ->  data/panel_ranked.rds
 #
 # Handles the rdq join internally, so it works whether or not
 # data/funda.rds already has report dates attached.
 #
-# ⚠️ Section 4 is where look-ahead bias lives. Read it.
+# Section 4 is where look-ahead bias could occur.
 # =====================================================================
 
 library(tidyverse)
@@ -145,9 +145,9 @@ fa <- funda |>
 
 
 # =====================================================================
-# 4. ⚠️ THE TIMING RULE — the most important block in the project
+# 4. THE TIMING RULE — very important
 # =====================================================================
-# A fundamental becomes usable the month AFTER its earnings announcement.
+# A fundamental becomes usable the month after its earnings announcement.
 # Where rdq is missing, fall back to datadate + 6 months (the Fama-French
 # convention, deliberately conservative).
 
@@ -200,7 +200,6 @@ setkey(uni_dt, gvkey, form_date)
 # In a data.table rolling join X[i], the output's join column keeps X's
 # name and i's VALUES. So `avail_date` will hold form_date values after
 # the join, and the fundamental's own availability date would be lost.
-# Copy it to a separate column first.
 fa_dt[, fund_avail := avail_date]
 
 # roll = 730 : a fundamental stays current up to 2 years, then goes stale
