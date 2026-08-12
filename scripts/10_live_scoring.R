@@ -1,17 +1,17 @@
 # =====================================================================
-# AlphaQuant — Live scoring
+# Cross-Sectional-Equity-Return-Prediction — Live scoring
 #
 # Trains on all available history, then ranks the most recent
-# cross-section. This is the "AlphaQuant Score" deliverable.
+# cross-section. 
 #
-# ⚠️ WHAT THIS IS
+# WHAT THIS IS
 # Out-of-sample rank IC was 0.06-0.08. That means the ranking is
 # directionally right roughly 55-60% of the time on any individual
 # stock, with enormous variance. The worst backtest year saw a -62%
 # decile spread. This is a weak statistical signal designed for
 # diversified portfolios, not a list of stock picks.
 #
-# ⚠️ NOT INVESTMENT ADVICE. Research output only.
+# NOT INVESTMENT ADVICE. Research output only.
 # =====================================================================
 
 library(tidyverse)
@@ -206,31 +206,3 @@ write_csv(scores |> select(ticker, sector, mktcap, alphaquant_score,
 
 cat("\nWrote output/alphaquant_scores_", format(CURRENT, "%Y%m"), ".csv\n", sep="")
 
-
-# =====================================================================
-# HOW TO PRESENT THIS RESPONSIBLY
-# =====================================================================
-# SAY:
-#   "The model ranks stocks on characteristics that predicted returns
-#    out of sample from 2010-2023, with a rank information coefficient
-#    of 0.06-0.08 and a decile spread of ~5% net of costs."
-#
-#   "The top decile as a GROUP outperformed the bottom decile. Any
-#    individual name in it is close to a coin flip."
-#
-# DO NOT SAY:
-#   "The model predicts AAPL will return 14%."      <- it does not
-#   "These are the best stocks to buy."             <- it cannot know
-#   "Backtested returns of X%."  without costs, turnover, and the
-#   worst-year drawdown stated alongside.
-#
-# ALWAYS STATE ALONGSIDE ANY RESULT:
-#   - net of 20bp/side costs
-#   - worst annual decile spread: -62%
-#   - Sharpe 0.29-0.34, well below the market's ~0.8
-#   - long-only excess over equal-weighted market was 1.3-1.9%
-#     and NOT statistically significant
-#
-# The scores are a research artifact. Presenting them with the
-# uncertainty attached is what makes the project credible; presenting
-# them as picks is what makes it look naive.
