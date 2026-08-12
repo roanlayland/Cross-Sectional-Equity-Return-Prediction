@@ -1,10 +1,10 @@
 # =====================================================================
-# AlphaQuant — Robustness grid
+# Cross-Sectional-Equity-Return-Prediction — Robustness grid
 #
 # Varies breadth, size floor, holding period, and transaction cost, then
 # reports EVERY cell. Also breaks results out by sector.
 #
-# ⚠️ THIS IS A ROBUSTNESS SURFACE, NOT A SEARCH
+# THIS IS A ROBUSTNESS SURFACE, NOT A SEARCH
 # The grid below contains ~120 configurations. At a 5% threshold, about
 # six will look significant by chance alone. Reporting the best cell as
 # "the result" would be data mining and the performance would be biased
@@ -266,13 +266,13 @@ cat("selection. If it collapses, the edge was a sector bet.\n")
 # =====================================================================
 # 7. Performance within each sector
 # =====================================================================
-# ⚠️ The return must be LEAD by one month. Joining a score to the SAME
+# The return must be LEAD by one month. Joining a score to the SAME
 # month's return measures a contemporaneous relationship, not a forecast,
 # and comes out negative for mechanical reasons: a stock that just fell
 # becomes cheap, and cheap is what the model ranks highly.
 
 cat("\n===== TOP-DECILE SPREAD WITHIN EACH SECTOR =====\n")
-cat("⚠️ 10-11 sectors tested. Expect roughly one false positive.\n")
+cat("10-11 sectors tested. Expect roughly one false positive.\n")
 cat("Consistency of SIGN across sectors matters more than any single t.\n\n")
 
 fwd1 <- msf |>
@@ -373,23 +373,3 @@ fig2 <- sector_res |>
 ggsave("figures/sector_spreads.png", fig2, width = 9, height = 5, dpi = 300)
 
 cat("\nDone. Grid in output/robustness_grid.csv, two figures saved.\n")
-
-
-# =====================================================================
-# HOW TO USE THIS IN THE PAPER
-# =====================================================================
-# Report the MARGINAL EFFECT tables (Section 5), not individual cells.
-# Those show how each construction choice moves performance, averaged
-# over everything else — which is a finding.
-#
-# State plainly: "We evaluated 120 configurations. X% produced FF6 alpha
-# significant at the 5% level, against 2.5% expected by chance."
-#
-# Do NOT write "our strategy achieves Y%" using the best cell. With 120
-# cells the maximum is guaranteed to look good and means nothing.
-#
-# The honest headline given your results so far:
-#   "Performance improves monotonically with portfolio breadth and
-#    degrades with holding period beyond six months, but no configuration
-#    produced Fama-French six-factor alpha reliably distinguishable from
-#    zero once transaction costs are accounted for."
