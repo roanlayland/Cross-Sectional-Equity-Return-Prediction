@@ -1,0 +1,7 @@
+Construction,Names,Hold (mo),Net ann,Vol,Sharpe,Max DD
+"Top 25, monthly",25,1,0.095,0.321,0.44,-0.555
+"Top 25, 6-month",25,6,0.088,0.295,0.43,-0.582
+"Top 25, 12-month",25,12,0.04,0.283,0.28,-0.59
+"Top 100, 6-month",100,6,0.12,0.243,0.59,-0.468
+"Top 150, 6-month",150,6,0.125,0.23,0.63,-0.447
+CRSP value-wt market,NA,NA,0.15,0.16,0.93,NA
