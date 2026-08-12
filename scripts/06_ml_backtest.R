@@ -1,10 +1,10 @@
 # =====================================================================
-# AlphaQuant — Session 7: Walk-forward ML backtest
+# Cross-Sectional-Equity-Return-Prediction — Session 7: Walk-forward ML backtest
 #
 # Trains elastic net, random forest, and XGBoost in an expanding window
 # with a 12-month embargo, then evaluates with rank IC and decile spreads.
 #
-# ⚠️ THE EMBARGO IS THE WHOLE POINT. Your target is a 12-month forward
+# THE EMBARGO IS THE WHOLE POINT. The target is a 12-month forward
 # return, so a stock formed in Jan 2010 has an outcome realized in Jan
 # 2011. Training on Jan 2010 and testing on 2011 leaks. Every default CV
 # scheme in caret and tidymodels gets this wrong.
@@ -70,7 +70,7 @@ cat("Imputed.", length(needs_flag), "missingness flags added.\n")
 # The first ~14 months have features that are 100% missing: lagged
 # fundamentals and 12-month momentum don't exist yet. Median imputation
 # can't fill a column with no observations, so models see zero complete
-# cases. Drop these periods entirely.
+# cases.
 bad_periods <- panel |>
   group_by(form_date) |>
   summarise(across(all_of(RK), ~ mean(is.na(.x))), .groups = "drop") |>
@@ -100,7 +100,7 @@ cat("Rows:", nrow(model_data),
 
 
 # =====================================================================
-# 1. The split function — read this carefully
+# 1. The split function
 # =====================================================================
 make_split <- function(test_year) {
   test_start <- as.Date(paste0(test_year, "-01-01"))
@@ -132,7 +132,7 @@ cat("Test year 2015\n",
     " last train form_date:", format(max(s$train$form_date)), "\n",
     " its outcome realized:", format(max(s$train$form_date) %m+% months(12)), "\n",
     " first test form_date:", format(min(s$test$form_date)), "\n")
-# The realized date must be <= the first test date. If not, STOP.
+# The realized date must be <= the first test date. 
 
 
 # =====================================================================
@@ -185,7 +185,7 @@ fit_xgb <- function(sp) {
             subsample = 0.7, colsample_bytree = 0.7,
             min_child_weight = XGB_MINCHILD, lambda = 5, nthread = 4)
   
-  # xgboost 3.x returns an external pointer; best_iteration / niter /
+  # xgboost 3x returns an external pointer; best_iteration / niter /
   # evaluation_log are no longer list elements. Capture the printed
   # evaluation log instead — version-agnostic and always available.
   log_txt <- capture.output(
@@ -259,7 +259,7 @@ ic_summary <- ic_by_period |>
 
 print(ic_summary)
 
-# ⚠️ SANITY GATE
+# SANITY GATE
 # mean_ic of 0.02-0.05  -> plausible, this is what real signals look like
 # mean_ic > 0.15        -> you have a leak. Stop and find it.
 if (max(ic_summary$mean_ic) > 0.15) {
@@ -359,9 +359,7 @@ if (file.exists("data/ff_factors.rds")) {
 # =====================================================================
 # 7. Does nonlinearity actually buy anything?
 # =====================================================================
-# Compare XGBoost against elastic net on IDENTICAL periods. If the answer
-# is "barely," say so in the paper. That is a real, well-documented
-# finding, and reporting it honestly reads as competence.
+# Compare XGBoost against elastic net on IDENTICAL periods. 
 
 ic_by_period |>
   pivot_wider(names_from = model, values_from = ic) |>
@@ -421,20 +419,3 @@ write_csv(ic_summary,        "output/ic_summary.csv")
 write_csv(backtest_summary,  "output/backtest_summary.csv")
 write_csv(ic_by_period,      "output/ic_by_period.csv")
 if (!is.null(alpha_tests)) write_csv(alpha_tests, "output/ff_alpha.csv")
-
-
-# =====================================================================
-# WHAT GOOD LOOKS LIKE
-# =====================================================================
-# mean_ic        0.02 - 0.05        > 0.15 means a leak
-# ic_tstat       2 - 5              > 10 means a leak
-# hit_rate       0.55 - 0.68
-# gross_spread   0.03 - 0.08 /yr
-# net_spread     often about half of gross
-# ff_alpha_t     if < 2, your signal is explained by known factors —
-#                report that plainly, it is a legitimate finding
-#
-# If your numbers are far above these ranges, do not celebrate. Go back
-# to Session 2 and re-audit the joins. Results that look too good are
-# almost always a leak, and finding it yourself is much better than
-# having an interviewer find it.
