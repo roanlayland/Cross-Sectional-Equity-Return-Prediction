@@ -1,5 +1,5 @@
-1# =====================================================================
-# AlphaQuant — Overlapping 12-month cohort portfolio
+# =====================================================================
+# Cross-Sectional-Equity-Return-Prediction — Overlapping 12-month cohort portfolio
 #
 # Each month: score the cross-section, buy $100 of each of the top 25.
 # Hold that cohort for a full 12 months, then sell.
@@ -328,20 +328,3 @@ write_csv(cohort_perf, "output/cohort_returns.csv")
 write_rds(coh, "output/cohorts.rds")
 
 cat("\nSaved figures and CSVs.\n")
-
-
-# =====================================================================
-# HOW TO READ THIS
-# =====================================================================
-# Compare "Cohort 12mo (net)" against "Equal-weight universe", not the
-# S&P 500. Your universe is US common stocks above a size floor, equal
-# weighted — comparing that to a cap-weighted large-cap index is not a
-# fair benchmark.
-#
-# The number that matters is the excess t-statistic. Above 2 over ~14
-# years is a genuine result. Below 2 means the strategy outperformed on
-# average but not reliably enough to distinguish from luck.
-#
-# The cohort-vintage table is the honest picture: some formation months
-# work, others do not. A strategy that only worked in 3 of 14 years is
-# a different claim from one that worked in 11.
