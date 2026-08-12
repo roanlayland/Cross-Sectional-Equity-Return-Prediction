@@ -9,7 +9,7 @@ Across **120 portfolio configurations, none beat the market** on a
 risk-adjusted basis — market beta of 1.24–1.79 and transaction costs
 consume the edge.
 
-📄 **[Full paper (download PDF)](paper.pdf)** · 📊 **[Figures](figures/)** · 💻 **[Code](scripts/)**
+📄 **[Full paper](paper.md)** · 📊 **[Figures](figures/)** · 💻 **[Code](scripts/)**
 
 ---
 
