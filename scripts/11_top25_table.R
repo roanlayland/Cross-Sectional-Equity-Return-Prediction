@@ -1,5 +1,5 @@
 # =====================================================================
-# AlphaQuant — Top 25 scorecard
+# Cross-Sectional-Equity-Return-Prediction — Top 25 scorecard
 #
 # Scores one cross-section, attaches share price, and (if the forward
 # year has already resolved) shows what each stock actually did.
@@ -56,8 +56,6 @@ if (is.null(SCORE_DATE)) SCORE_DATE <- max(panel$form_date)
 # =====================================================================
 # 2. Train with a 12-month embargo before the scoring date
 # =====================================================================
-# Critical: the model must not see any outcome that overlaps the year
-# it is predicting. Same rule as the walk-forward.
 
 train_end <- SCORE_DATE %m-% months(12)
 
