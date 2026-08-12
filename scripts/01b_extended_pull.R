@@ -1,9 +1,5 @@
 # =====================================================================
 # AlphaQuant — Stage 2: WRDS data extraction
-#
-# Run ONE SECTION AT A TIME. Each saves an .rds so you never re-query.
-# Total runtime ~30-60 min depending on whether you pull daily data.
-# =====================================================================
 
 library(RPostgres)
 library(tidyverse)
@@ -55,8 +51,6 @@ write_rds(dl, "data/delist.rds")
 # =====================================================================
 # 3. CRSP DAILY  (~30-45 min, several GB) — needed for beta & volatility
 # =====================================================================
-# OPTIONAL for version 1. Skip if you want to move fast; add later.
-# Pulling only what you need keeps this manageable.
 
 dsf <- dbGetQuery(wrds, paste0("
   select permno, date, ret
@@ -79,7 +73,7 @@ write_rds(mkt_d, "data/mkt_daily.rds")
 # =====================================================================
 # 4. COMPUSTAT ANNUAL  (~2 min)
 # =====================================================================
-# The four filters are MANDATORY. Without them you get duplicate rows
+# Without the four filters you get duplicate rows
 # per firm-year from restatements and alternate reporting formats.
 
 funda <- dbGetQuery(wrds, paste0("
@@ -107,7 +101,7 @@ nrow(funda); n_distinct(funda$gvkey)
 # 5. COMPUSTAT QUARTERLY  (~3 min) — optional, gives fresher data
 # =====================================================================
 # Annual data is up to 18 months stale at formation. Quarterly cuts that
-# to ~4 months. Worth adding in version 2.
+# to ~4 months.
 
 fundq <- dbGetQuery(wrds, paste0("
   select gvkey, datadate, fyearq, fqtr, rdq,
@@ -139,7 +133,7 @@ write_rds(link, "data/link.rds")
 
 
 # =====================================================================
-# 7. SECTOR / COMPANY INFO  (~5 sec)
+# 7. SECTOR / COMPANY INFO
 # =====================================================================
 company <- dbGetQuery(wrds, "
   select gvkey, conm, gsector, ggroup, gind, gsubind, sic, naics
@@ -150,10 +144,8 @@ write_rds(company, "data/company.rds")
 
 
 # =====================================================================
-# 8. S&P 500 MEMBERSHIP HISTORY  (~5 sec)
+# 8. S&P 500 MEMBERSHIP HISTORY
 # =====================================================================
-# Even if your universe is broader, keep this — you need it as a
-# benchmark and as a robustness subsample.
 
 idx <- dbGetQuery(wrds, "
   select gvkey, \"from\" as from_dt, thru as thru_dt
@@ -165,7 +157,7 @@ write_rds(idx, "data/sp500_members.rds")
 
 
 # =====================================================================
-# 9. FAMA-FRENCH FACTORS  (~5 sec) — for alpha calculations
+# 9. FAMA-FRENCH FACTORS - for alpha calculations
 # =====================================================================
 ff <- dbGetQuery(wrds, paste0("
   select date, mktrf, smb, hml, rmw, cma, umd, rf
@@ -179,9 +171,9 @@ dbDisconnect(wrds)
 
 
 # =====================================================================
-# 10. NYSE SIZE BREAKPOINTS — defines your universe floor
+# 10. NYSE SIZE BREAKPOINTS — defines the universe floor
 # =====================================================================
-# Standard practice: exclude stocks below the 20th percentile of NYSE
+# excludes stocks below the 20th percentile of NYSE
 # market cap. Removes microcap noise without gutting the sample.
 
 msf <- read_rds("data/msf.rds")
@@ -200,21 +192,3 @@ write_rds(breakpoints, "data/nyse_breakpoints.rds")
 # CHECK: breakpoint should rise over time (inflation + market growth)
 breakpoints |> filter(month(ym) == 12) |> print(n = 40)
 
-
-# =====================================================================
-# WHAT YOU SHOULD HAVE NOW
-# =====================================================================
-# data/msf.rds               ~2.5M rows   CRSP monthly returns
-# data/delist.rds            ~25k rows    delisting returns
-# data/dsf.rds               ~60M rows    daily returns (if pulled)
-# data/funda.rds             ~300k rows   annual fundamentals
-# data/fundq.rds             ~1M rows     quarterly fundamentals
-# data/link.rds              ~35k rows    gvkey <-> permno
-# data/company.rds           ~50k rows    sector codes
-# data/sp500_members.rds     ~2k rows     index membership history
-# data/ff_factors.rds        ~400 rows    Fama-French factors
-# data/nyse_breakpoints.rds  ~400 rows    size floor by month
-#
-# Next: Stage 3 in the runbook — build the panel. That is the step where
-# look-ahead bias hides. Write the join logic yourself, then have it
-# audited, then run the rdq gap check before trusting a single result.
