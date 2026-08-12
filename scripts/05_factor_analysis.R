@@ -1,7 +1,7 @@
 # =====================================================================
-# AlphaQuant — Session 5/6: Factor sorts and linear models
+# Cross-Sectional-Equity-Return-Prediction — Session 5/6: Factor sorts and linear models
 #
-# Works on synthetic OR real data. Change PANEL_PATH only.
+# Works on synthetic or real data.
 # Replaces the earlier 02_analysis.R (which assumed annual/quintile).
 # =====================================================================
 
@@ -177,7 +177,6 @@ stage2 <- function(s1) {
 fm <- stage2(stage1) |> arrange(desc(abs(t_nw)))
 print(fm, n = 30)
 
-# Per-period R-squared. Expect 1-5%. This is normal. Do not try to fix it.
 r2 <- panel |>
   filter(!is.na(fwd_12m)) |>
   group_by(form_date) |>
