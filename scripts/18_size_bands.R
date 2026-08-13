@@ -1,5 +1,5 @@
 # =====================================================================
-# AlphaQuant — Where in the size distribution does the signal work?
+# Cross-Sectional-Equity-Return-Prediction — Where in the size distribution does the signal work?
 #
 # Tests market cap BANDS (min and max), using RELATIVE size rather than
 # fixed dollar thresholds. $2B in 1994 was a large company; today it is
@@ -11,7 +11,7 @@
 #   2. Decile spread  — the tradeable version
 #   3. Portfolio alpha — after costs and beta
 #
-# ⚠️ Also validates: does the best band in 2010-2017 stay best in
+# Also validates: does the best band in 2010-2017 stay best in
 # 2018-2024? Sector selection already failed this test (rank correlation
 # -0.055). Size may or may not.
 # =====================================================================
@@ -185,7 +185,7 @@ print(band_res |> mutate(across(c(ann_ret, mkt_ret, vol, capm_a, ff6_a),
 
 
 # =====================================================================
-# 5. ⚠️ VALIDATION — does the best band persist?
+# 5. VALIDATION — does the best band persist?
 # =====================================================================
 SPLIT <- as.Date("2018-01-01")
 
@@ -260,24 +260,3 @@ ggsave("figures/spread_by_size.png", fig2, width = 8, height = 5, dpi = 300)
 write_csv(ic_by_size,     "output/ic_by_size.csv")
 write_csv(spread_by_size, "output/spread_by_size.csv")
 write_csv(band_res,       "output/size_bands.csv")
-
-cat("\nDone.\n")
-
-
-# =====================================================================
-# HOW TO READ THIS
-# =====================================================================
-# Section 2 (rank IC by decile) is the cleanest evidence. It has no
-# portfolio construction, no costs, no beta -- just whether the score
-# orders returns correctly within that slice.
-#
-# A MONOTONIC gradient is believable: literature consistently finds
-# anomalies stronger in smaller stocks, where arbitrage is harder.
-#
-# A single decile spiking with neighbours flat is noise. Nine bands
-# means roughly one false positive at the 5% level.
-#
-# Section 5 is the test that matters. Sector selection scored -0.055
-# on the equivalent test, meaning it was pure noise. If size scores
-# above ~0.5, the size effect is real and worth reporting as a finding
-# rather than a parameter choice.
