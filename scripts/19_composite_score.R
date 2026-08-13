@@ -1,5 +1,5 @@
 # =====================================================================
-# AlphaQuant — Signed composite factor score
+# Cross-Sectional-Equity-Return-Prediction — Signed composite factor score
 #
 # No machine learning. A transparent, rules-based composite: each factor
 # is signed according to its direction in PRIOR LITERATURE, converted to
@@ -12,7 +12,6 @@
 #     to this sample's t-statistics
 #   - fully transparent: you can explain every component
 #
-# ⚠️ SIGNS ARE FROM LITERATURE, NOT FROM THIS SAMPLE
 # Choosing signs by looking at your own t-statistics would be in-sample
 # fitting. Every sign below has a published source predating this study.
 # Section 6 verifies the composite works in both sample halves.
@@ -65,7 +64,7 @@ cat("Composite built from", nrow(FACTORS), "factors:\n\n")
 FACTORS |> mutate(direction = if_else(sign > 0, "high is good", "LOW is good")) |>
   select(factor, group, direction, source) |> print(n = 20)
 
-cat("\n⚠️ current_ratio and cash_ratio signs are motivated by this sample\n")
+cat("\n current_ratio and cash_ratio signs are motivated by this sample\n")
 cat("   rather than prior literature. Disclose that, or drop them and\n")
 cat("   set INCLUDE_SAMPLE_SIGNED <- FALSE below.\n")
 
@@ -220,7 +219,7 @@ print(sp_tbl |> mutate(monthly = percent(monthly, accuracy=0.01),
 
 
 # =====================================================================
-# 6. ⚠️ SPLIT-SAMPLE CHECK
+# 6. SPLIT-SAMPLE CHECK
 # =====================================================================
 # Does the composite work in both halves, or is it driven by one period?
 
@@ -396,39 +395,6 @@ write_csv(signed |> filter(form_date == LATEST) |>
             select(ticker, gsector, mktcap, composite, all_of(S_COLS)),
           "output/composite_current_scores.csv")
 
-cat("\nDone.\n")
-
-
-# =====================================================================
-# HOW TO READ THIS
-# =====================================================================
-# Section 4/5: does the COMPOSITE beat its best individual component?
-#   If yes, combining factors adds value beyond any single one.
-#   If no, you are better off with the single strongest factor.
-#
-# Section 6: does it work in BOTH halves? A composite that only works
-#   1994-2009 or only 2010-2024 is period-specific, not a factor model.
-#
-# Section 7/8: the honest comparison is ann_ret vs mkt_ret and
-#   sharpe vs mkt_sharpe in the same row. Prior ML results found no
-#   construction that beat the market; a transparent composite may or
-#   may not do better, but it has one clear advantage — no training,
-#   nothing to overfit, and every component explainable.
-
-# =====================================================================
-# 11. T-WEIGHTED COMPOSITES
-# =====================================================================
-# Instead of weighting every factor equally, weight by strength of
-# evidence: a factor with t = 8 gets more say than one with t = 2.5.
-#
-# ⚠️ TWO VERSIONS, AND THE DIFFERENCE IS THE POINT
-#   A. In-sample weights  — t-stats from the FULL sample. Contaminated:
-#                           the weights already know the answer.
-#   B. Expanding weights  — at each date, t-stats from PRIOR data only.
-#                           This is what you could actually have traded.
-#
-# Factors with t <= 0 get zero weight rather than negative, since a
-# negative weight would mean betting against your own ex-ante sign.
 
 MIN_HISTORY <- 60   # months of history required before weights are used
 
@@ -456,12 +422,12 @@ w_insample <- ic_series |>
          w = w / sum(w))
 
 cat("\n========== IN-SAMPLE T-WEIGHTS ==========\n")
-cat("⚠️ Fitted to the full sample. For comparison only.\n\n")
+cat("Fitted to the full sample. For comparison only.\n\n")
 print(w_insample |> mutate(t_stat = round(t_stat,2),
                            w = percent(w, accuracy=0.1)) |>
         arrange(desc(w)), n = 20)
 
-# ---- B. EXPANDING-WINDOW WEIGHTS (the honest version) ---------------
+# ---- B. EXPANDING-WINDOW WEIGHTS ---------------
 # At each formation date, weights come from t-stats computed on IC
 # realised strictly BEFORE that date. The 12-month lag reflects that a
 # month's IC is only observable once its forward return has resolved.
