@@ -1,5 +1,5 @@
 # =====================================================================
-# AlphaQuant — Accruals as a quality screen
+# Cross-Sectional-Equity-Return-Prediction — Accruals as a quality screen
 #
 # Instead of weighting accruals inside the composite, use it as a GATE:
 # exclude stocks with the worst accruals, then rank what remains by the
@@ -8,13 +8,13 @@
 # Run AFTER 19_composite_score.R, which leaves `signed`, `rets`, `ff`
 # in the environment.
 #
-# ⚠️ THE TRADE-OFF
+# THE TRADE-OFF
 # Screening shrinks the candidate pool, so the 100 picks come from
 # fewer names and their composite scores are weaker on average. A screen
 # only helps if what it removes is worse than what it forces you to
 # accept instead. This is not obvious in advance.
 #
-# ⚠️ FIVE CUTOFFS TESTED
+# FIVE CUTOFFS TESTED
 # The best of five looks good by construction. Read the PATTERN across
 # cutoffs, not the maximum. A monotonic improvement is believable; a
 # single spike is not.
@@ -196,24 +196,3 @@ bind_rows(
   half_test(0.3, SPLIT, as.Date("2026-01-01"), "2010-2024 screened")
 ) |> fmt() |> print(width = Inf)
 
-cat("\nThe screen is real only if it helps in BOTH halves.\n")
-
-
-# =====================================================================
-# HOW TO READ THIS
-# =====================================================================
-# Compare each screened row against the "no screen" row IN THE SAME
-# BLOCK -- market returns differ across blocks because the usable date
-# ranges differ.
-#
-# BELIEVABLE: Sharpe improves monotonically as the screen tightens from
-#   none -> 10% -> 25% -> 50%, and the improvement appears in both
-#   sample halves.
-#
-# NOT BELIEVABLE: one cutoff spikes while its neighbours are flat. Five
-#   cutoffs were tested; the maximum of five noisy draws looks good by
-#   construction.
-#
-# ALSO WATCH: if tightening the screen raises returns but the pool falls
-#   below ~400 names, you are no longer running a composite strategy —
-#   you are running an accruals strategy with a composite tiebreak.
