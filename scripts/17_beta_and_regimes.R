@@ -1,5 +1,5 @@
 # =====================================================================
-# AlphaQuant — Regime analysis and beta control
+# Cross-Sectional-Equity-Return-Prediction — Regime analysis and beta control
 #
 # Q1: does the model do better or worse in DOWN markets?
 # Q2: if beta is held near 1.0, does the signal beat the market?
@@ -34,7 +34,7 @@ rets <- msf |>
 # =====================================================================
 # 1. Rolling 36-month beta for every stock
 # =====================================================================
-# Estimated on TRAILING data only, so no look-ahead.
+# Estimated on trailing data only, so no look-ahead.
 
 cat("Computing rolling betas (a few minutes)...\n")
 
