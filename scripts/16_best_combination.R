@@ -1,15 +1,9 @@
 # =====================================================================
-# AlphaQuant — Testing the "best combination"
+# Cross-Sectional-Equity-Return-Prediction — Testing the "best combination"
 #
 # Runs the configuration assembled from the winning grid cells, AND the
 # honest version: choose sectors using only the first half of the sample,
 # then test on the second half.
-#
-# ⚠️ WHY THE NAIVE VERSION IS NOT EVIDENCE
-# Energy and Industrials were the top 2 of 10 sectors by t-statistic.
-# The maximum of 10 noisy draws looks good by construction. The $2B size
-# floor was likewise picked by outcome. Stacking selections made after
-# seeing results produces a number that will not repeat.
 #
 # The split-sample test in Section 3 is the one that can actually
 # distinguish signal from selection.
@@ -101,7 +95,7 @@ show <- function(x) x |>
 # =====================================================================
 cat("\n============ 'BEST' COMBINATION (post-hoc) ============\n")
 cat("Energy + Industrials | $2B floor | 6mo hold | 20bp\n")
-cat("⚠️ Three of these four choices were made AFTER seeing results.\n\n")
+cat("Three of these four choices were made AFTER seeing results.\n\n")
 
 best <- bind_rows(
   backtest(scored, 25,  2000, 6, 20, c("Energy","Industrials"), "Best-cfg, 25 names"),
@@ -140,7 +134,7 @@ cat("the whole sector and this is a sector bet, not stock selection.\n")
 
 
 # =====================================================================
-# 3. ⚠️ THE HONEST TEST — split-sample sector selection
+# 3. THE HONEST TEST — split-sample sector selection
 # =====================================================================
 # Rank sectors using 2010-2017 ONLY, take the top 2, then trade them in
 # 2018-2024. This is what a researcher standing in 2018 could have done.
@@ -218,17 +212,6 @@ oos <- bind_rows(
            "OOS: all sectors", date_from = SPLIT)
 )
 show(oos)
-
-cat("\n=================== HOW TO READ THIS ===================\n")
-cat("Compare row 1 (sectors picked WITHOUT hindsight) against row 3\n")
-cat("(no sector selection at all).\n\n")
-cat("If row 1 beats row 3 -> sector selection adds value, and it is\n")
-cat("   defensible because the choice used only prior data.\n")
-cat("If row 1 is similar or worse -> the sector effect was noise, and\n")
-cat("   the in-sample 'best combination' in Section 2 is an artifact.\n\n")
-cat("Row 2 is the hindsight version. It will likely look better than\n")
-cat("row 1. That gap IS the selection bias, measured directly -- which\n")
-cat("makes it a genuinely useful number to report in the paper.\n")
 
 write_csv(best,   "output/best_config.csv")
 write_csv(persist,"output/sector_persistence.csv")
