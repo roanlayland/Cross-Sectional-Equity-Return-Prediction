@@ -1,10 +1,10 @@
 # =====================================================================
-# AlphaQuant — Do the spending factors work in any size segment?
+# Cross-Sectional-Equity-Return-Prediction — Do the spending factors work in any size segment?
 #
 # Self-contained. Rebuilds everything it needs from data/, so it does
 # not depend on objects left over from earlier scripts.
 #
-# ⚠️ 6 factors x 3 size bands = 18 tests. Roughly one will look
+# 6 factors x 3 size bands = 18 tests. Roughly one will look
 # significant by chance. A single isolated hit means little. What would
 # be meaningful is a MONOTONIC gradient — a factor strengthening
 # steadily from large to small caps — because that has the
