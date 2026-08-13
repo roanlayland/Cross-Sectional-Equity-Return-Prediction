@@ -1,12 +1,12 @@
 # =====================================================================
-# AlphaQuant — ML over an extended period, with optional screen
+# Cross-Sectional-Equity-Return-Prediction— ML over an extended period, with optional screen
 #
 # TWO CHANGES vs 06_ml_backtest.R:
 #   1. Test period starts 2000 instead of 2010, so the sample spans two
 #      regimes rather than one.
 #   2. Optional accruals screen applied before portfolio formation.
 #
-# ⚠️ WHY THE PERIOD MATTERS MORE THAN THE SCREEN
+# WHY THE PERIOD MATTERS MORE THAN THE SCREEN
 # The rules-based composite produced CAPM alpha of +7.2% (t = 2.49) over
 # 1994-2009 and -6.9% (t = -2.28) over 2010-2024. Every prior ML test
 # ran only on the second window. If the ML model shows the same
@@ -15,8 +15,6 @@
 #
 # The screen improved composite Sharpe from 0.55 to 0.60 on matched
 # months, with alpha t = 1.21 -- not significant. Expect little.
-#
-# Runtime: 40-60 minutes (24 annual models instead of 15).
 # =====================================================================
 
 library(tidyverse)
@@ -148,11 +146,9 @@ cat("\nScored", nrow(scored), "stock-months |",
 # =====================================================================
 # 4. Portfolio engine with optional screen
 # =====================================================================
-# ⚠️ MATCHED MONTHS
+# MATCHED MONTHS
 # Screening shrinks the pool, which can silently drop months where the
-# minimum-size constraint fails. That produces a different sample, not a
-# better strategy. `common` below forces every configuration onto the
-# same months.
+# minimum-size constraint fails. 
 
 has_acc <- "rk_accruals" %in% names(scored)
 
@@ -295,24 +291,4 @@ bind_rows(
 # 8. Export
 # =====================================================================
 write_csv(ic_era, "output/ml_ic_by_era.csv")
-cat("\nDone.\n")
 
-
-# =====================================================================
-# HOW TO READ THIS
-# =====================================================================
-# Section 5 is the important one.
-#
-# If 2000-2009 shows positive alpha and 2010-2023 negative, matching the
-# composite, then your project's central finding changes from
-#   "the signal does not survive implementation"
-# to
-#   "the signal generated significant alpha through 2009 and reversed
-#    thereafter, consistent with either arbitrage or a sustained
-#    growth-led regime."
-#
-# That is a stronger and more interesting paper, and it makes every
-# earlier negative result interpretable rather than merely negative.
-#
-# Section 6 tests the screen. Expect little: it moved composite Sharpe
-# 0.55 -> 0.60 with alpha t = 1.21, which is not significant.
