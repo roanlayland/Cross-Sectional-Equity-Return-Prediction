@@ -1,19 +1,9 @@
 # =====================================================================
-# AlphaQuant — Three attempts to beat the market
+# Cross-Sectional-Equity-Return-Prediction — Three attempts to beat the market
 #
 #   A. Volatility targeting   (Moreira & Muir 2017)
 #   B. Low-beta screen        (Frazzini & Pedersen 2014)
 #   C. Combined best-practice construction
-#
-# ⚠️ READ THIS FIRST
-# You have now evaluated roughly 400 configurations. Anything that looks
-# good here is the maximum of a large search. Two safeguards are built in:
-#
-#   1. Every strategy is validated on a SPLIT SAMPLE. A strategy that
-#      only works in one half is not a strategy.
-#   2. A permutation test estimates how good the BEST of N random
-#      configurations looks by chance, giving a benchmark for judging
-#      whether any result exceeds what search alone would produce.
 #
 # The verdict printed at the end applies fixed criteria decided in
 # advance, not chosen after seeing results.
@@ -204,7 +194,7 @@ full_res |> fmt() |> print(width = Inf)
 
 
 # =====================================================================
-# 4. ⚠️ SPLIT-SAMPLE VALIDATION
+# 4. SPLIT-SAMPLE VALIDATION
 # =====================================================================
 cat("\n========== FIRST HALF (pre-2010) ==========\n")
 h1 <- map_dfr(names(strats), ~ stats(strats[[.x]] |> filter(month_date < SPLIT), .x))
@@ -216,7 +206,7 @@ h2 |> fmt() |> print(width = Inf)
 
 
 # =====================================================================
-# 5. ⚠️ PERMUTATION BENCHMARK
+# 5. PERMUTATION BENCHMARK
 # =====================================================================
 # How good does the BEST of N RANDOM strategies look? If random
 # selection produces Sharpe ratios comparable to the strategies above,
@@ -251,7 +241,6 @@ cat("\nA real strategy should beat the BEST random draw, not the average.\n")
 # =====================================================================
 # 6. VERDICT — fixed criteria
 # =====================================================================
-# Set before running. Applied mechanically.
 
 cat("\n\n================ VERDICT ================\n")
 cat("PASS requires ALL of:\n")
@@ -341,24 +330,3 @@ write_csv(h1,       "output/strategy_h1.csv")
 write_csv(h2,       "output/strategy_h2.csv")
 write_csv(verdict,  "output/strategy_verdict.csv")
 write_csv(rand_res, "output/random_benchmark.csv")
-
-cat("\nDone.\n")
-
-
-# =====================================================================
-# HOW TO READ THE VERDICT
-# =====================================================================
-# Criterion 3 (alpha t > 2) is the one most strategies fail, and it is
-# the one that matters most. A Sharpe advantage of 0.60 vs 0.59 is not
-# evidence of skill; it is within the noise of a 30-year sample.
-#
-# Criterion 5 is the search correction. If the best of 30 RANDOM
-# portfolios achieves Sharpe 0.55, then a designed strategy at 0.58 has
-# demonstrated very little.
-#
-# If nothing passes, that is a legitimate and publishable finding, and
-# it is consistent with everything else in this project.
-#
-# If something passes, the honest framing remains: it was selected from
-# a large search, and the appropriate next test would be genuinely new
-# data -- a different market, or a period after this sample ends.
